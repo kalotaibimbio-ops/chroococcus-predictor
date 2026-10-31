@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light"><title>Chroococcus extract: inhibition-zone predictor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&display=swap" rel="stylesheet">   <!-- title font: change "Orbitron" here and in the h1 rule below -->
+<style>
+/* ===== COLORS: change the values below, everything else follows ===== */
+:root{--bg1:#f2fbf6;--bg2:#e0f4f3;--card:rgba(255,255,255,.84);--ink:#17413a;--mut:#4f7a72;--line:#cde8df;--acc:#27a06a;--acc2:#1aa0a8;--soft:#e2f6ec;--warn:#fff8df;--warnb:#e0b43a;--good:#1b8f60;--goodbg:#d9f4e6;--bad:#c4554b;--badbg:#fde8e4;--t1:#1b8f60;--t2:#12868f;--c0:#1e88e5;--c1:#e53935;--c2:#8e24aa;--c3:#ef8f00;
+color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;color:var(--ink);font:17px/1.55 "Times New Roman","Liberation Serif",Tinos,Times,serif;background:linear-gradient(160deg,var(--bg1),var(--bg2)) fixed}
+body::before{content:"";position:fixed;inset:0;z-index:-1;opacity:.9;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cpath d='M0 70h34l12-12h26l12 12h56M70 0v34l12 12v28M30 140v-30l12-12' fill='none' stroke='%2327a06a' stroke-opacity='.13'/%3E%3Ccircle cx='46' cy='58' r='3' fill='%231aa0a8' fill-opacity='.22'/%3E%3Ccircle cx='82' cy='46' r='3' fill='%2327a06a' fill-opacity='.22'/%3E%3Ccircle cx='42' cy='98' r='3' fill='%231aa0a8' fill-opacity='.22'/%3E%3C/svg%3E")}
+main{max-width:780px;margin:0 auto;padding:16px 14px 40px}
+header{display:flex;gap:12px;align-items:center;margin:6px 0 4px}header svg{flex:none;width:64px;height:64px}
+h1{font-family:"Orbitron","Bahnschrift","Futura","Trebuchet MS",sans-serif;font-weight:800;font-size:1.12rem;line-height:1.3;letter-spacing:.03em;margin:0;background:linear-gradient(90deg,var(--t1),var(--t2));-webkit-background-clip:text;background-clip:text;color:transparent}h2{font-size:1.05rem;margin:0 0 .5em;color:var(--acc)}p{margin:.4em 0}.mut{color:var(--mut);font-size:.9rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0;box-shadow:0 2px 12px rgba(39,160,106,.09);backdrop-filter:blur(4px)}
+.warn{background:var(--warn);border-color:var(--warnb);border-left:5px solid var(--warnb)}
+button,input,select{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;max-width:100%}
+button{background:linear-gradient(90deg,var(--acc),var(--acc2));color:#fff;border:0;font-weight:600;cursor:pointer}button.alt{background:#fff;color:var(--ink);border:1px solid var(--line)}
+label{display:block;margin:.3em 0}input[type=file]{width:100%;box-sizing:border-box}.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:.5em 0}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.95rem}th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;white-space:nowrap}th{color:var(--mut);font-weight:600}
+.b{display:inline-block;padding:1px 10px;border-radius:99px;font-size:.8rem;font-weight:700}.s{background:var(--goodbg);color:var(--good)}.r{background:var(--badbg);color:var(--bad)}
+svg text{fill:var(--mut);font-size:11.5px}.ax{stroke:var(--line)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px}
+.leg span{display:inline-block;margin-right:12px;font-size:.85rem}.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+#out{font-size:1.05rem;font-weight:600}
+</style></head><body><main>
+<header><svg viewBox="0 0 64 64" role="img" aria-label="Algae cells with circuit lines"><g fill="none" stroke="#27a06a" stroke-width="1.4"><circle cx="32" cy="32" r="29" stroke-opacity=".35" stroke-dasharray="3 3"/><path d="M3 32h10M51 32h10M32 3v10M32 51v10" stroke="#1aa0a8"/></g>
+<g stroke="#17413a" stroke-opacity=".25"><circle cx="24" cy="25" r="10" fill="#8fdcb4"/><circle cx="40" cy="25" r="10" fill="#6fd0c4"/><circle cx="24" cy="40" r="10" fill="#6fd0c4"/><circle cx="40" cy="40" r="10" fill="#8fdcb4"/></g>
+<g fill="#17413a" fill-opacity=".35"><circle cx="24" cy="25" r="2.6"/><circle cx="40" cy="25" r="2.6"/><circle cx="24" cy="40" r="2.6"/><circle cx="40" cy="40" r="2.6"/></g><g fill="#1aa0a8"><circle cx="3" cy="32" r="2.2"/><circle cx="61" cy="32" r="2.2"/><circle cx="32" cy="3" r="2.2"/><circle cx="32" cy="61" r="2.2"/></g></svg>
+<div><h1>Chroococcus extract: inhibition-zone predictor</h1><div class="mut">Trained on three concentrations, tested on two it never saw</div></div></header>
+
+<div class="card"><h2>1. Training and test</h2><p id="status"></p></div>
+
+<div class="card"><h2>2. Hidden concentrations: predicted vs measured</h2><p id="verdict"></p>
+<div class="scroll"><table id="met"></table></div><div id="chart" style="max-width:440px;margin:10px auto 0"></div><div class="leg" id="leg"></div>
+<div class="scroll" style="margin-top:10px"><table id="cmp"></table></div><p id="agree" style="font-weight:600"></p>
+</div>
+
+<div class="card"><h2>3. Zone against concentration</h2><div class="grid" id="panels"></div><div class="leg" id="leg2"></div>
+</div>
+
+<div class="card"><h2>4. Predict any concentration</h2>
+<div class="row"><select id="pb"></select><input id="pc" type="number" value="3.5" min="0.5" max="10" step="0.1" style="width:90px"><span class="mut">mg/mL</span><button id="go">Predict</button></div>
+<p id="out"></p><div id="pchart" style="max-width:420px"></div></div>
+
+</main>
+<script>
+/*CORE*/
+const BACT=["E. coli","S. aureus","P. aeruginosa","B. subtilis"],GRAM=[0,1,0,1];
+const TR0=[[0,1,0.5,9.0],[0,2,0.5,5.0],[0,3,0.5,5.0],[0,1,2.5,10.0],[0,2,2.5,9.0],[0,3,2.5,7.0],[0,1,10.0,12.0],[0,2,10.0,14.0],[0,3,10.0,10.0],[1,1,0.5,12.0],[1,2,0.5,12.0],[1,3,0.5,9.0],[1,1,2.5,8.0],[1,2,2.5,9.0],[1,3,2.5,5.0],[1,1,10.0,7.0],[1,2,10.0,12.0],[1,3,10.0,12.0],[2,1,0.5,14.0],[2,2,0.5,9.0],[2,3,0.5,15.0],[2,1,2.5,9.0],[2,2,2.5,7.0],[2,3,2.5,7.0],[2,1,10.0,25.0],[2,2,10.0,23.0],[2,3,10.0,17.0],[3,1,0.5,5.0],[3,2,0.5,5.0],[3,3,0.5,5.0],[3,1,2.5,5.0],[3,2,2.5,8.0],[3,3,2.5,5.0],[3,1,10.0,5.0],[3,2,10.0,9.0],[3,3,10.0,5.0]],TE0=[[0,1,1.25,5.0],[0,2,1.25,5.0],[0,3,1.25,5.0],[0,1,5.0,11.0],[0,2,5.0,12.0],[0,3,5.0,19.0],[1,1,1.25,5.0],[1,2,1.25,5.0],[1,3,1.25,14.0],[1,1,5.0,9.0],[1,2,5.0,10.0],[1,3,5.0,9.0],[2,1,1.25,17.0],[2,2,1.25,7.0],[2,3,1.25,16.0],[2,1,5.0,12.0],[2,2,5.0,15.0],[2,3,5.0,12.0],[3,1,1.25,5.0],[3,2,1.25,7.0],[3,3,1.25,5.0],[3,1,5.0,5.0],[3,2,5.0,9.0],[3,3,5.0,5.0]],CT0={"E. coli":7.0,"S. aureus":8.33,"P. aeruginosa":9.33,"B. subtilis":5.0};   // training rows, hidden test rows, solvent-control zones (mm)
+const mk=a=>a.map(([b,r,c,z])=>({bact:BACT[b],gram:GRAM[b],plate:BACT[b]+"-R"+r,conc:c,zone:z}));
+function feat(r){const l=Math.log2(r.conc/0.5),f=[l,r.gram];BACT.forEach(b=>f.push(r.bact===b?1:0));BACT.forEach(b=>f.push(r.bact===b?l:0));return f}
+function ridge(X,y,a=1){const n=X.length,p=X[0].length,mx=Array(p).fill(0);X.forEach(r=>r.forEach((v,j)=>mx[j]+=v/n));
+const my=y.reduce((s,v)=>s+v,0)/n,A=Array.from({length:p},()=>Array(p+1).fill(0));
+for(let i=0;i<n;i++){const xc=X[i].map((v,j)=>v-mx[j]),yc=y[i]-my;for(let j=0;j<p;j++){for(let k=0;k<p;k++)A[j][k]+=xc[j]*xc[k];A[j][p]+=xc[j]*yc}}
+for(let j=0;j<p;j++)A[j][j]+=a;
+for(let c=0;c<p;c++){let m=c;for(let r=c+1;r<p;r++)if(Math.abs(A[r][c])>Math.abs(A[m][c]))m=r;[A[c],A[m]]=[A[m],A[c]];
+for(let r=0;r<p;r++)if(r!==c){const f=A[r][c]/A[c][c];for(let k=c;k<=p;k++)A[r][k]-=f*A[c][k]}}
+const w=A.map((r,j)=>r[p]/r[j]),b0=my-w.reduce((s,v,j)=>s+v*mx[j],0);return x=>b0+x.reduce((s,v,j)=>s+v*w[j],0)}
+function metr(rows,p){const y=rows.map(r=>r.zone),n=y.length,my=y.reduce((s,v)=>s+v,0)/n;let ae=0,sr=0,st=0;
+rows.forEach((r,i)=>{const e=y[i]-p[i];ae+=Math.abs(e);sr+=e*e;st+=(y[i]-my)**2});return{mae:ae/n,r2:1-sr/st}}
+function evalTest(tr,te){const f=ridge(tr.map(feat),tr.map(r=>r.zone)),s={},c={};tr.forEach(r=>{s[r.bact]=(s[r.bact]||0)+r.zone;c[r.bact]=(c[r.bact]||0)+1});
+const all=tr.reduce((q,r)=>q+r.zone,0)/tr.length,pb=te.map(r=>c[r.bact]?s[r.bact]/c[r.bact]:all),pr=te.map(r=>f(feat(r)));
+return{f,pb,pr,base:metr(te,pb),ridge:metr(te,pr)}}
+/*END*/
+const $=id=>document.getElementById(id),mean=a=>a.reduce((s,v)=>s+v,0)/a.length,f1=v=>v.toFixed(1),f2=v=>v.toFixed(2);
+const CV=["var(--c0)","var(--c1)","var(--c2)","var(--c3)"];
+let TR=mk(TR0),TE=mk(TE0),CT=Object.assign({},CT0),M=null,YH=25;
+const TH=()=>2;   // sensitive if the zone is at least this many mm larger than the solvent control
+const call=(z,b)=>(z-(CT[b]??0)>=TH())?"Sensitive":"Resistant";
+const badge=c=>`<span class="b ${c==="Sensitive"?"s":"r"}">${c}</span>`;
+const doses=a=>[...new Set(a.map(r=>r.conc))].sort((x,y)=>x-y).join(", ");
+function agg(rows){const g={};rows.forEach(r=>{const k=r.bact+"|"+r.conc;(g[k]=g[k]||{b:r.bact,c:r.conc,v:[]}).v.push(r.zone)});
+return Object.values(g).map(x=>({b:x.b,c:x.c,m:mean(x.v),sd:x.v.length>1?Math.sqrt(x.v.reduce((s,v)=>s+(v-mean(x.v))**2,0)/(x.v.length-1)):0}))}
+function run(){M=evalTest(TR,TE);
+$("status").innerHTML=`<b>Training:</b> ${doses(TR)} mg/mL (${TR.length} measurements) &nbsp;·&nbsp; <b>Unseen test:</b> ${doses(TE)} mg/mL (${TE.length} measurements)`;
+const all=[...TR,...TE].map(r=>r.zone).concat(M.pr,Object.values(CT));YH=Math.ceil((Math.max(...all)+2)/5)*5;
+$("pb").innerHTML=BACT.filter(n=>TR.some(x=>x.bact===n)).map(n=>`<option>${n}</option>`).join("");render()}
+function render(){if(!M)return;const b=M.base,r=M.ridge,row=(n,x)=>`<tr><td>${n}</td><td>${f2(x.mae)}</td><td>${f2(x.r2)}</td></tr>`;
+$("met").innerHTML="<tr><th>Model</th><th>Error (mm)</th><th>R²</th></tr>"+row("Bacterium average (baseline)",b)+row("Ridge model",r);
+$("verdict").textContent=r.mae<b.mae-0.1?"The ridge model predicted the hidden concentrations better than the bacterium average.":(r.mae>b.mae+0.1?"The ridge model predicted the hidden concentrations worse than the bacterium average.":"The ridge model predicted the hidden concentrations about as accurately as the bacterium average.");
+const g={};TE.forEach((x,i)=>{const k=x.bact+"|"+x.conc;(g[k]=g[k]||{b:x.bact,c:x.conc,o:[],p:[]});g[k].o.push(x.zone);g[k].p.push(M.pr[i])});
+const L=Object.values(g).sort((x,y)=>BACT.indexOf(x.b)-BACT.indexOf(y.b)||x.c-y.c);let ok=0;
+$("cmp").innerHTML="<tr><th>Bacterium</th><th>Dose (mg/mL)</th><th>Measured (mm)</th><th>Predicted (mm)</th><th>Measured</th><th>Predicted</th><th>Match</th></tr>"+L.map(x=>{const o=mean(x.o),p=mean(x.p),co=call(o,x.b),cp=call(p,x.b);if(co===cp)ok++;
+return`<tr><td><i>${x.b}</i></td><td>${x.c}</td><td>${f1(o)}</td><td>${f1(p)}</td><td>${badge(co)}</td><td>${badge(cp)}</td><td>${co===cp?"✓":"✗"}</td></tr>`}).join("");
+$("agree").textContent=`The predicted label matches the measured label in ${ok} of ${L.length} bacterium-dose combinations.`;
+scatter();$("panels").innerHTML=BACT.filter(n=>TR.some(x=>x.bact===n)).map(n=>panel(n)).join("");
+$("leg2").innerHTML=`<span>● training mean ± SD</span><span>○ unseen mean ± SD</span><span>— model</span><span>- - solvent control</span><span>··· sensitive threshold</span>`}
+function scatter(){const W=420,H=380,m={l:44,r:12,t:12,b:44},v=TE.map(x=>x.zone).concat(M.pr),lo=Math.floor(Math.min(...v)-1),hi=Math.ceil(Math.max(...v)+1);
+const X=z=>m.l+(z-lo)/(hi-lo)*(W-m.l-m.r),Y=z=>H-m.b-(z-lo)/(hi-lo)*(H-m.t-m.b),cs=[...new Set(TE.map(x=>x.conc))].sort((a,b)=>a-b);
+let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Predicted versus measured zones">`;
+for(let t=Math.ceil(lo/2)*2;t<=hi;t+=2)s+=`<line class="ax" x1="${m.l}" x2="${W-m.r}" y1="${Y(t)}" y2="${Y(t)}"/><line class="ax" y1="${m.t}" y2="${H-m.b}" x1="${X(t)}" x2="${X(t)}"/><text x="${m.l-6}" y="${Y(t)+4}" text-anchor="end">${t}</text><text x="${X(t)}" y="${H-m.b+16}" text-anchor="middle">${t}</text>`;
+s+=`<line x1="${X(lo)}" y1="${Y(lo)}" x2="${X(hi)}" y2="${Y(hi)}" stroke="var(--warnb)" stroke-dasharray="5 4"/><text x="${(W+m.l)/2}" y="${H-6}" text-anchor="middle">Measured zone (mm)</text><text x="12" y="${H/2}" transform="rotate(-90 12 ${H/2})" text-anchor="middle">Predicted zone (mm)</text>`;
+TE.forEach((x,i)=>{const cx=X(x.zone),cy=Y(M.pr[i]),k=BACT.indexOf(x.bact),sh=cs.indexOf(x.conc)%3,c=`fill="${CV[k]}" fill-opacity=".85" stroke="#17413a" stroke-opacity=".5" stroke-width=".6"`;
+s+=sh==0?`<circle cx="${cx}" cy="${cy}" r="4.5" ${c}/>`:sh==1?`<rect x="${cx-4}" y="${cy-4}" width="8" height="8" ${c}/>`:`<path d="M${cx} ${cy-5}L${cx+5} ${cy+4}L${cx-5} ${cy+4}Z" ${c}/>`});
+$("chart").innerHTML=s+"</svg>";$("leg").innerHTML=BACT.map((n,k)=>`<span><i style="background:${CV[k]}"></i>${n}</span>`).join("")+"<br>"+cs.map((c,i)=>`<span>${["●","■","▲"][i%3]} ${c} mg/mL</span>`).join("")}
+function panel(b,hi){const W=300,H=235,m={l:36,r:10,t:22,b:36},lx=Math.log10,x0=lx(0.3),x1=lx(15),k=BACT.indexOf(b);
+const X=c=>m.l+(lx(c)-x0)/(x1-x0)*(W-m.l-m.r),Y=z=>H-m.b-z/YH*(H-m.t-m.b);let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Zone against concentration for ${b}"><text x="${m.l}" y="14" style="font-style:italic;fill:var(--ink);font-size:14px">${b}</text>`;
+for(let t=0;t<=YH;t+=5)s+=`<line class="ax" x1="${m.l}" x2="${W-m.r}" y1="${Y(t)}" y2="${Y(t)}"/><text x="${m.l-5}" y="${Y(t)+4}" text-anchor="end">${t}</text>`;
+[0.5,1,2.5,5,10].forEach(c=>s+=`<text x="${X(c)}" y="${H-m.b+14}" text-anchor="middle">${c}</text>`);
+s+=`<text x="${(W+m.l)/2}" y="${H-4}" text-anchor="middle">mg/mL</text><text x="10" y="${H/2}" transform="rotate(-90 10 ${H/2})" text-anchor="middle">Zone (mm)</text>`;
+const ct=CT[b];if(ct!=null)s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${Y(ct)}" y2="${Y(ct)}" stroke="var(--mut)" stroke-dasharray="5 4"/><line x1="${m.l}" x2="${W-m.r}" y1="${Y(ct+TH())}" y2="${Y(ct+TH())}" stroke="var(--good)" stroke-dasharray="1.5 3" stroke-width="1.6"/>`;
+let pts="";for(let i=0;i<=60;i++){const c=Math.pow(10,x0+(x1-x0)*i/60);pts+=`${X(c).toFixed(1)},${Y(Math.max(0,M.f(feat({bact:b,gram:GRAM[k],conc:c})))).toFixed(1)} `}
+s+=`<polyline points="${pts}" fill="none" stroke="${CV[k]}" stroke-width="2.2"/>`;
+[[agg(TR),1],[agg(TE),0]].forEach(([A,fill])=>A.filter(a=>a.b===b).forEach(a=>{s+=`<line x1="${X(a.c)}" x2="${X(a.c)}" y1="${Y(a.m-a.sd)}" y2="${Y(a.m+a.sd)}" stroke="${CV[k]}" stroke-width="1.3"/><circle cx="${X(a.c)}" cy="${Y(a.m)}" r="4.5" fill="${fill?CV[k]:"#fff"}" stroke="${CV[k]}" stroke-width="1.8"/>`}));
+if(hi)s+=`<line x1="${X(hi.c)}" x2="${X(hi.c)}" y1="${m.t}" y2="${H-m.b}" stroke="var(--acc)" stroke-dasharray="3 3"/><path d="M${X(hi.c)} ${Y(hi.z)-7}l6 7l-6 7l-6-7z" fill="var(--acc)" stroke="#fff"/>`;
+return s+"</svg>"}
+$("go").onclick=()=>{const b=$("pb").value;let c=parseFloat($("pc").value);if(!b||!(c>0)||!M)return;c=Math.min(10,Math.max(0.5,c));$("pc").value=c;
+const i=BACT.indexOf(b),z=M.f(feat({bact:b,gram:GRAM[i],conc:c})),ct=CT[b];
+$("out").innerHTML=`<i>${b}</i> at ${c} mg/mL: predicted inhibition zone ≈ ${z.toFixed(1)} mm ${badge(call(z,b))} <span class="mut">(solvent control ${f1(ct)} mm)</span>`;
+$("pchart").innerHTML=panel(b,{c,z})};
+run();$("go").click();
+</script></body></html>
